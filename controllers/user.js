@@ -1,6 +1,7 @@
 // DEPENDENCIES
 const express = require('express')
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 // MODELS
 const User = require('../models/user.js')
@@ -11,5 +12,83 @@ users.get('/', (req, res) => {
     message: 'Success'
   })
 })
+
+users.post('/register', (req, res) => {
+  // Initialize empty arrays for data in model
+  req.body.following = []
+  req.body.followers = []
+  req.body.posts = []
+  req.body.messages = []
+
+  req.body.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10))
+  
+  User.find({ email: req.body.email }, (err, foundUser) => {
+    if (err) {
+      res.status(400).json({
+        error: err
+      })
+    }
+    else if (foundUser.length > 0) {
+      res.status(400).json({
+        message: 'User already exists'
+      })
+    } else {
+      User.create(req.body, (err, createdUser) => {
+        if (err) {
+          res.status(400).json({
+            error: err
+          })
+        } else {
+
+          const user = {
+            id: createdUser._id,
+            email: createdUser.email,
+            displayName: createdUser.displayName
+          }
+
+          jwt.sign({ user }, process.env.SECRET_TOKEN, (err, token) => {
+            if (err) {
+              res.status(400).json({
+                error: err
+              })
+            } else {
+              res.status(200).json({
+                newUser: createdUser,
+                token: token
+              })
+            }
+          })
+
+        }
+      })
+    }
+  })
+})
+
+// USER SCHEMA FOR REFERENCE
+// displayName: {
+//   type: String,
+//   required: true
+// },
+// email: {
+//   type: String,
+//   required: true
+// },
+// password: {
+//   type: String,
+//   required: true
+// },
+// nativeLanguage: {
+//   type: String,
+//   required: true
+// },
+// targetLanguage: {
+//   type: String,
+//   required: true
+// },
+// following: [String],
+// followers: [String],
+// posts: [String],
+// messages: [String]
 
 module.exports = users
