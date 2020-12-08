@@ -7,11 +7,12 @@ const bcrypt = require('bcrypt')
 const User = require('../models/user.js')
 const users = express.Router()
 
-users.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Success'
-  })
-})
+
+// users.get('/', (req, res) => {
+//   res.status(200).json({
+//     message: 'Success'
+//   })
+// })
 
 users.post('/register', (req, res) => {
   // Initialize empty arrays for data in model
@@ -58,12 +59,53 @@ users.post('/register', (req, res) => {
               })
             }
           })
-
         }
       })
     }
   })
 })
+
+users.post('/login', (req, res) => {
+  User.find({ email: req.body.email }, (err, foundUser) => {
+    if (err) {
+      res.status(400).json({
+        error: err
+      })
+    }
+    else if (foundUser.length === 0) {
+      res.status(400).json({
+        message: 'User not found'
+      })
+    } else {
+      // Found user
+      if (bcrypt.compareSync(req.body.password, foundUser[0].password)) {
+        const user = {
+          userId: foundUser[0]._id,
+          displayName: foundUser[0].displayName,
+          email: foundUser[0].email
+        }
+        jwt.sign({ user }, process.env.SECRET_TOKEN, (err, token) => {
+          if (err) {
+            res.status(400).json({
+              error: err
+            })
+          } else {
+            res.status(200).json({
+              token: token
+            })
+          }
+        })
+
+      } else {
+        res.status(400).json({
+          message: 'Invalid Password'
+        })
+        }
+
+    }
+  })
+})
+
 
 // USER SCHEMA FOR REFERENCE
 // displayName: {
