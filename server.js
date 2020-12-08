@@ -23,7 +23,11 @@ mongoose.connect(MONGODB_URI, {
 })
 
 // CONTROLLERS
+const userController = require('./controllers/user.js')
+app.use('/users', userController)
 
+const postController = require('./controllers/post.js')
+app.use('/posts', postController)
 
 app.get('/', (req, res) => {
   res.send('Success')
