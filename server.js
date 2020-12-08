@@ -4,8 +4,25 @@ const mongoose = require('mongoose')
 const app = express();
 
 // CONFIGURATION
+require('dotenv').config()
+const PORT = process.env.PORT
+const MONGODB_URI = process.env.MONGODB_URI
 
-const PORT = 3000
+//MIDDLEWARE
+app.use(express.static('public'))
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
+
+//DATABASE
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false
+}, () => {
+  console.log(`Connected to MONGODB at ${MONGODB_URI}`)
+})
+
+// CONTROLLERS
 
 
 app.get('/', (req, res) => {
