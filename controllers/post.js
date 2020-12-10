@@ -91,6 +91,41 @@ posts.put('/like', verifyToken, (req, res) => {
   })
 })
 
+posts.put('/comment', verifyToken, (req, res) => {
+  // console.log(req.user.user.userId)
+  // console.log(req.body.postId)
+  let commentData = {
+    userId: req.user.user.userId,
+    commentDate: Date.now(),
+    commentText: req.body.commentText
+  }
+  Post.findById(req.body.postId, (err, foundPost) => {
+    if (err) {
+      res.status(400).json({
+        error: err
+      })
+    } else {
+
+      let newPostData = foundPost
+      newPostData.comments.push(commentData)
+
+      Post.findByIdAndUpdate(req.body.postId, newPostData, (err, updatedPost) => {
+        if (err) {
+          res.status(400).json({
+            error: err
+          })
+        } else {
+          console.log(newPostData)
+          res.status(200).json({
+            updatedPost: updatedPost
+          })
+        }
+      })
+
+    }
+  })
+})
+
 // Post schema reference
 // postCreator: {
 //   type: String,
