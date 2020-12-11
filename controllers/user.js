@@ -141,6 +141,23 @@ users.put('/follow', verifyToken, (req, res) => {
   })
 })
 
+users.get('/profile', verifyToken, (req, res) => {
+  User.findById(req.body.userId, (err, foundUser) => {
+    if (err) {
+      res.status(400).json({
+        error: err
+      })
+    } else {
+      let userData = foundUser
+      userData.password = undefined
+      console.log(userData)
+      res.status(200).json({
+        foundUser: userData
+      })
+    }
+  })
+})
+
 // USER SCHEMA FOR REFERENCE
 // displayName: {
 //   type: String,
