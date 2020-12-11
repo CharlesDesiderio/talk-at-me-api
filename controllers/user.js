@@ -7,13 +7,20 @@ const bcrypt = require('bcrypt')
 const User = require('../models/user.js')
 const users = express.Router()
 
-
-// users.get('/', (req, res) => {
-//   res.status(200).json({
-//     message: 'Success'
-//   })
-// })
-
+// MIDDLEWARE
+const verifyToken = (req, res, next) => {
+  const bearerHeader = req.headers['authorization']
+  if (typeof bearerHeader !== 'undefined') {
+    const bearerToken = bearerHeader.split(' ')[1]
+    req.token = bearerToken
+    req.user = jwt.verify(req.token, process.env.SECRET_TOKEN)
+    next()
+  } else {
+    res.status(403).json({
+      error: 'Forbidden'
+    })
+  }
+}
 users.post('/register', (req, res) => {
   // Initialize empty arrays for data in model
   req.body.following = []
@@ -106,6 +113,33 @@ users.post('/login', (req, res) => {
   })
 })
 
+users.put('/follow', verifyToken, (req, res) => {
+  User.findById(req.body.userId, (err, foundUser) => {
+    if (err) {
+      res.status(400).json({
+        error: err
+      })
+    } else {
+      let newFollowerAdded = foundUser
+      if (newFollowerAdded.followers.includes(req.user.user.userId)) {
+        newFollowerAdded.followers.splice(newFollowerAdded.followers.indexOf(req.user.user.userId), 1)
+      } else {
+        newFollowerAdded.followers.push(req.user.user.userId)
+      }
+      User.findByIdAndUpdate(req.body.userId, newFollowerAdded, (err, foundUser) => {
+        if (err) {
+          res.status(400).json({
+            error: err
+          })
+        } else {
+          res.status(200).json({
+            foundUser: foundUser
+          })
+        }
+      })
+    }
+  })
+})
 
 // USER SCHEMA FOR REFERENCE
 // displayName: {

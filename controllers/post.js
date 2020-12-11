@@ -23,6 +23,7 @@ const verifyToken = (req, res, next) => {
 }
 
 posts.get('/', verifyToken, (req, res) => {
+  
   Post.find({}, (err, foundPosts) => {
     if (err) {
       res.status(400).json({
@@ -37,6 +38,7 @@ posts.get('/', verifyToken, (req, res) => {
 })
 
 posts.post('/', verifyToken, (req, res) => {
+
   const newPost = {
     postCreator: req.user.user.userId,
     postDate: Date.now(),
@@ -92,8 +94,7 @@ posts.put('/like', verifyToken, (req, res) => {
 })
 
 posts.put('/comment', verifyToken, (req, res) => {
-  // console.log(req.user.user.userId)
-  // console.log(req.body.postId)
+
   let commentData = {
     userId: req.user.user.userId,
     commentDate: Date.now(),
@@ -105,10 +106,8 @@ posts.put('/comment', verifyToken, (req, res) => {
         error: err
       })
     } else {
-
       let newPostData = foundPost
       newPostData.comments.push(commentData)
-
       Post.findByIdAndUpdate(req.body.postId, newPostData, (err, updatedPost) => {
         if (err) {
           res.status(400).json({
@@ -121,7 +120,6 @@ posts.put('/comment', verifyToken, (req, res) => {
           })
         }
       })
-
     }
   })
 })
