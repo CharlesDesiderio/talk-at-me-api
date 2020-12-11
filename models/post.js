@@ -18,24 +18,13 @@ const postSchema = mongoose.Schema({
     required: true
   },
   likedUsers: [String],
-  comments: [
-    {
-      userId: {
-        Type: String,
-        required: true
-      },
-      commentDate: {
-        Type: String,
-        required: true
-      },
-      commentText: {
-        Type: String,
-        required: true
-      }
-    }
-  ]
+  comments: [{
+      userId: String,
+      commentDate: String,
+      commentText: String
+    }]
 })
 
-const User = mongoose.model('Post', postSchema)
+const Post = mongoose.model('Post', postSchema)
 
 module.exports = Post
