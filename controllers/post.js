@@ -23,15 +23,33 @@ const verifyToken = (req, res, next) => {
 }
 
 posts.get('/', verifyToken, (req, res) => {
-  
+
   Post.find({}, (err, foundPosts) => {
     if (err) {
       res.status(400).json({
         error: err
       })
     } else {
-      res.status(200).json({
-        posts: foundPosts
+      
+      // I need to replace the IDs of the users with their current display names (or add that display name and add the ID for profile linking)
+
+      User.find({}, (err, foundUsers) => {
+
+        if (err) {
+          res.status(400).json({
+            error: err
+          })
+        } else {
+          foundPosts.forEach(post => {
+            foundPosts[foundPosts.indexOf(post)].postCreator = foundUsers[foundUsers.findIndex(user => {
+              return user._id.toString() == post.postCreator.toString()
+            })].displayName
+          })
+
+          res.status(200).json({
+            posts: foundPosts
+          })
+        }
       })
     }
   })
