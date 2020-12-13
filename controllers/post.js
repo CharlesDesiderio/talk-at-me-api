@@ -44,6 +44,15 @@ posts.get('/', verifyToken, (req, res) => {
             foundPosts[foundPosts.indexOf(post)].postCreator = foundUsers[foundUsers.findIndex(user => {
               return user._id.toString() == post.postCreator.toString()
             })].displayName
+
+            if (post.comments.length > 0) {
+              post.comments.forEach(comment => {
+                post.comments[post.comments.indexOf(comment)].userId = foundUsers[foundUsers.findIndex(user => {
+                  return user._id.toString() == comment.userId.toString()
+                })].displayName
+                console.log(comment)
+              })
+            }
           })
 
           res.status(200).json({
@@ -80,9 +89,9 @@ posts.post('/', verifyToken, (req, res) => {
   })
 })
 
-posts.put('/like', verifyToken, (req, res) => {
-  
-  Post.findById(req.body.id, (err, foundPost) => {
+posts.get('/like/:id', verifyToken, (req, res) => {
+  console.log('ping')
+  Post.findById(req.params.id, (err, foundPost) => {
     if (err) {
       res.status(400).json({
         error: err
@@ -98,7 +107,7 @@ posts.put('/like', verifyToken, (req, res) => {
       }
       let updatedPost = foundPost
       updatedPost.likedUsers = likes;
-      Post.findByIdAndUpdate(req.body.id, updatedPost, (err, foundPost) => {
+      Post.findByIdAndUpdate(req.params.id, updatedPost, (err, foundPost) => {
         if (err) {
           res.status(400).json({
             error: err
