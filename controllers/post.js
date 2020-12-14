@@ -90,7 +90,6 @@ posts.post('/', verifyToken, (req, res) => {
 })
 
 posts.get('/like/:id', verifyToken, (req, res) => {
-  console.log('ping')
   Post.findById(req.params.id, (err, foundPost) => {
     if (err) {
       res.status(400).json({

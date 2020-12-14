@@ -73,7 +73,7 @@ users.post('/register', (req, res) => {
 })
 
 users.post('/login', (req, res) => {
-  User.find({ email: req.body.email }, (err, foundUser) => {
+  User.find({ email: req.body.email.toLowerCase() }, (err, foundUser) => {
     console.log(req.body)
     if (err) {
       res.status(400).json({
@@ -99,7 +99,8 @@ users.post('/login', (req, res) => {
             })
           } else {
             res.status(200).json({
-              token: token
+              token: token,
+              user: user
             })
           }
         })
