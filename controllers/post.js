@@ -150,6 +150,36 @@ posts.put('/comment', verifyToken, (req, res) => {
   })
 })
 
+posts.delete('/delete/:id', verifyToken, (req, res) => {
+  console.log(req.params.id, req.user.user.userId)
+  Post.findById(req.params.id, (err, foundPost) => {
+    console.log(foundPost)
+    if (err) {
+      res.status(400).json({
+        error: err
+      })
+    } else {
+      if (foundPost.postCreator === req.user.user.userId) {
+        Post.findByIdAndRemove(req.params.id, (err, deletedPost) => {
+          if (err) {
+            res.status(400).json({
+              error: err
+            })
+          } else {
+            res.status(200).json({
+              message: 'Post deleted'
+            })
+          }
+        })
+      } else {
+        res.status(400).json({
+          error: 'Unauthorized'
+        })
+      }
+    }
+  })
+})
+
 // Post schema reference
 // postCreator: {
 //   type: String,
