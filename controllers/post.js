@@ -50,7 +50,6 @@ posts.get('/', verifyToken, (req, res) => {
                 post.comments[post.comments.indexOf(comment)].userId = foundUsers[foundUsers.findIndex(user => {
                   return user._id.toString() == comment.userId.toString()
                 })].displayName
-                console.log(comment)
               })
             }
           })
@@ -97,8 +96,6 @@ posts.get('/like/:id', verifyToken, (req, res) => {
       })
     } else {
       let likes = foundPost.likedUsers;
-      console.log(foundPost)
-      console.log(foundPost.likedUsers.includes(req.user.user.userId))
       if (likes.includes(req.user.user.userId)) {
         likes.splice(likes.indexOf(req.user.user.userId), 1)
       } else {
@@ -140,7 +137,6 @@ posts.put('/comment', verifyToken, (req, res) => {
             error: err
           })
         } else {
-          console.log(newPostData)
           res.status(200).json({
             updatedPost: updatedPost
           })
@@ -151,9 +147,7 @@ posts.put('/comment', verifyToken, (req, res) => {
 })
 
 posts.delete('/delete/:id', verifyToken, (req, res) => {
-  console.log(req.params.id, req.user.user.userId)
   Post.findById(req.params.id, (err, foundPost) => {
-    console.log(foundPost)
     if (err) {
       res.status(400).json({
         error: err
