@@ -74,7 +74,6 @@ users.post('/register', (req, res) => {
 
 users.post('/login', (req, res) => {
   User.find({ email: req.body.email.toLowerCase() }, (err, foundUser) => {
-    console.log(req.body)
     if (err) {
       res.status(400).json({
         error: err
@@ -152,7 +151,6 @@ users.get('/profile', verifyToken, (req, res) => {
     } else {
       let userData = foundUser
       userData.password = undefined
-      console.log(userData)
       res.status(200).json({
         foundUser: userData
       })
