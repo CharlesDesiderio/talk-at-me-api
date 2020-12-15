@@ -5,6 +5,7 @@ const postSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  postCreatorId: String,
   postDate: {
     type: String,
     required: true

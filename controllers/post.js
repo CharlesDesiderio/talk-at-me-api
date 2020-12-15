@@ -40,7 +40,9 @@ posts.get('/', verifyToken, (req, res) => {
             error: err
           })
         } else {
+          
           foundPosts.forEach(post => {
+            foundPosts[foundPosts.indexOf(post)]['postCreatorId'] = post.postCreator.toString()
             foundPosts[foundPosts.indexOf(post)].postCreator = foundUsers[foundUsers.findIndex(user => {
               return user._id.toString() == post.postCreator.toString()
             })].displayName
@@ -53,7 +55,6 @@ posts.get('/', verifyToken, (req, res) => {
               })
             }
           })
-
           res.status(200).json({
             posts: foundPosts
           })
