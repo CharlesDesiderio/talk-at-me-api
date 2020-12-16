@@ -89,7 +89,8 @@ users.post('/login', (req, res) => {
         const user = {
           userId: foundUser[0]._id,
           displayName: foundUser[0].displayName,
-          email: foundUser[0].email
+          email: foundUser[0].email,
+          userLanguage: foundUser[0].targetLanguage
         }
         jwt.sign({ user }, process.env.SECRET_TOKEN, (err, token) => {
           if (err) {
