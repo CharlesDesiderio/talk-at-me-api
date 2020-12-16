@@ -51,7 +51,9 @@ users.post('/register', (req, res) => {
           const user = {
             id: createdUser._id,
             email: createdUser.email,
-            displayName: createdUser.displayName
+            displayName: createdUser.displayName,
+            userLanguage: createdUser.targetLanguage,
+            nativeLanguage: createdUser.nativeLanguage
           }
 
           jwt.sign({ user }, process.env.SECRET_TOKEN, (err, token) => {
@@ -90,7 +92,8 @@ users.post('/login', (req, res) => {
           userId: foundUser[0]._id,
           displayName: foundUser[0].displayName,
           email: foundUser[0].email,
-          userLanguage: foundUser[0].targetLanguage
+          userLanguage: foundUser[0].targetLanguage,
+          nativeLanguage: foundUser[0].nativeLanguage
         }
         jwt.sign({ user }, process.env.SECRET_TOKEN, (err, token) => {
           if (err) {
