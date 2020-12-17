@@ -10,8 +10,6 @@ require('dotenv').config()
 const PORT = process.env.PORT
 const MONGODB_URI = process.env.MONGODB_URI
 
-res.setHeader('Access-Control-Allow-Origin', 'https://talkatme.herokuapp.com');
-
 const whitelist = ['https://talkatme.herokuapp.com']
 const corsOptions = {
     origin: function (origin, callback) {
@@ -23,7 +21,7 @@ const corsOptions = {
     }
 }
 
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
 
 //MIDDLEWARE
 app.use(express.static('public'))
