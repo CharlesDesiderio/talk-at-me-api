@@ -42,6 +42,9 @@ posts.get('/', verifyToken, (req, res) => {
         } else {
           
           foundPosts.forEach(post => {
+            foundPosts[foundPosts.indexOf(post)]['postCreatorFollowers'] = foundUsers.find(user => {
+              return user._id.toString() === post.postCreator.toString()
+            }).followers
             foundPosts[foundPosts.indexOf(post)]['postCreatorId'] = post.postCreator.toString()
             foundPosts[foundPosts.indexOf(post)].postCreator = foundUsers[foundUsers.findIndex(user => {
               return user._id.toString() == post.postCreator.toString()
@@ -55,6 +58,7 @@ posts.get('/', verifyToken, (req, res) => {
               })
             }
           })
+          console.log(foundPosts[1].postCreatorFollowers[0])
           res.status(200).json({
             posts: foundPosts
           })
@@ -143,6 +147,20 @@ posts.put('/comment', verifyToken, (req, res) => {
             updatedPost: updatedPost
           })
         }
+      })
+    }
+  })
+})
+
+posts.put('/edit/:id', verifyToken, (req, res) => {
+  Post.findByIdAndUpdate(req.params.id, req.body, (err, updatedPost) => {
+    if (err) {
+      res.status(400).json({
+        error: err
+      })
+    } else {
+      res.status(200).json({
+        updatedPost: updatedPost
       })
     }
   })
