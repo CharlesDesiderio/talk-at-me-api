@@ -58,7 +58,6 @@ posts.get('/', verifyToken, (req, res) => {
               })
             }
           })
-          console.log(foundPosts[1].postCreatorFollowers[0])
           res.status(200).json({
             posts: foundPosts
           })
@@ -81,7 +80,6 @@ posts.post('/', verifyToken, (req, res) => {
 
   Post.create(newPost, (err, createdPost) => {
     if (err) {
-      console.log(err)
       res.status(400).json({
         error: err
       })

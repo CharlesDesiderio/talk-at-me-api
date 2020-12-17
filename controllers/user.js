@@ -29,7 +29,6 @@ users.post('/register', (req, res) => {
   req.body.messages = []
 
   req.body.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10))
-  
   User.find({ email: req.body.email }, (err, foundUser) => {
     if (err) {
       res.status(400).json({
@@ -43,13 +42,14 @@ users.post('/register', (req, res) => {
     } else {
       User.create(req.body, (err, createdUser) => {
         if (err) {
+          console.log(err)
           res.status(400).json({
             error: err
           })
         } else {
 
           const user = {
-            id: createdUser._id,
+            userId: createdUser._id,
             email: createdUser.email,
             displayName: createdUser.displayName,
             userLanguage: createdUser.targetLanguage,
@@ -64,7 +64,7 @@ users.post('/register', (req, res) => {
               })
             } else {
               res.status(200).json({
-                newUser: createdUser,
+                user: createdUser,
                 token: token
               })
             }
