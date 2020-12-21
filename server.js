@@ -20,9 +20,8 @@ const corsOptions = {
         }
     }
 }
-app.options('*', cors())
 
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
 
 //MIDDLEWARE
 app.use(express.static('public'))
