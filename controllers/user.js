@@ -42,7 +42,6 @@ users.post('/register', (req, res) => {
     } else {
       User.create(req.body, (err, createdUser) => {
         if (err) {
-          console.log(err)
           res.status(400).json({
             error: err
           })
@@ -56,7 +55,6 @@ users.post('/register', (req, res) => {
             nativeLanguage: createdUser.nativeLanguage,
             followerCount: createdUser.followers.length
           }
-
           jwt.sign({ user }, process.env.SECRET_TOKEN, (err, token) => {
             if (err) {
               res.status(400).json({
