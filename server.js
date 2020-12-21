@@ -20,6 +20,7 @@ const corsOptions = {
         }
     }
 }
+app.options('*', cors())
 
 app.use(cors(corsOptions))
 
