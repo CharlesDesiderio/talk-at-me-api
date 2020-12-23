@@ -3,8 +3,10 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 
 // MODELS
-const Post = require('../models/post.js')
 const User = require('../models/user.js')
+const Post = require('../models/post.js')
+
+const Mongoose = require('mongoose')
 const posts = express.Router()
 
 // MIDDLEWARE
@@ -24,47 +26,64 @@ const verifyToken = (req, res, next) => {
 
 posts.get('/', verifyToken, (req, res) => {
 
-  Post.find({}, (err, foundPosts) => {
+
+  Post.find()
+  .select('comments')
+  .populate('comments.commentCreator')
+
+  .exec((err, foundPosts) => {
     if (err) {
       res.status(400).json({
         error: err
       })
     } else {
-      
-      // I need to replace the IDs of the users with their current display names (or add that display name and add the ID for profile linking)
-
-      User.find({}, (err, foundUsers) => {
-
-        if (err) {
-          res.status(400).json({
-            error: err
-          })
-        } else {
-          
-          foundPosts.forEach(post => {
-            foundPosts[foundPosts.indexOf(post)]['postCreatorFollowers'] = foundUsers.find(user => {
-              return user._id.toString() === post.postCreator.toString()
-            }).followers
-            foundPosts[foundPosts.indexOf(post)]['postCreatorId'] = post.postCreator.toString()
-            foundPosts[foundPosts.indexOf(post)].postCreator = foundUsers[foundUsers.findIndex(user => {
-              return user._id.toString() == post.postCreator.toString()
-            })].displayName
-
-            if (post.comments.length > 0) {
-              post.comments.forEach(comment => {
-                post.comments[post.comments.indexOf(comment)].userId = foundUsers[foundUsers.findIndex(user => {
-                  return user._id.toString() == comment.userId.toString()
-                })].displayName
-              })
-            }
-          })
-          res.status(200).json({
-            posts: foundPosts
-          })
-        }
-      })
+      console.log(foundPosts)
+      console.log(foundPosts[6].comments)
+      res.send('')
     }
   })
+
+  // Post.find({}, (err, foundPosts) => {
+  //   if (err) {
+  //     res.status(400).json({
+  //       error: err
+  //     })
+  //   } else {
+      
+  //     // I need to replace the IDs of the users with their current display names (or add that display name and add the ID for profile linking)
+
+  //     User.find({}, (err, foundUsers) => {
+
+  //       if (err) {
+  //         res.status(400).json({
+  //           error: err
+  //         })
+  //       } else {
+          
+  //         foundPosts.forEach(post => {
+  //           foundPosts[foundPosts.indexOf(post)]['postCreatorFollowers'] = foundUsers.find(user => {
+  //             return user._id.toString() === post.postCreator.toString()
+  //           }).followers
+  //           foundPosts[foundPosts.indexOf(post)]['postCreatorId'] = post.postCreator.toString()
+  //           foundPosts[foundPosts.indexOf(post)].postCreator = foundUsers[foundUsers.findIndex(user => {
+  //             return user._id.toString() == post.postCreator.toString()
+  //           })].displayName
+
+  //           if (post.comments.length > 0) {
+  //             post.comments.forEach(comment => {
+  //               post.comments[post.comments.indexOf(comment)].userId = foundUsers[foundUsers.findIndex(user => {
+  //                 return user._id.toString() == comment.userId.toString()
+  //               })].displayName
+  //             })
+  //           }
+  //         })
+  //         res.status(200).json({
+  //           posts: foundPosts
+  //         })
+  //       }
+  //     })
+  //   }
+  // })
 })
 
 posts.post('/', verifyToken, (req, res) => {
@@ -122,11 +141,13 @@ posts.get('/like/:id', verifyToken, (req, res) => {
 
 posts.put('/comment', verifyToken, (req, res) => {
 
+  // console.log(new Mongoose.Types.ObjectId(req.user.user.userId))
   let commentData = {
-    userId: req.user.user.userId,
+    commentCreator: req.user.user.userId,
     commentDate: Date.now(),
     commentText: req.body.commentText
   }
+  // console.log(commentData)
   Post.findById(req.body.postId, (err, foundPost) => {
     if (err) {
       res.status(400).json({
@@ -135,6 +156,7 @@ posts.put('/comment', verifyToken, (req, res) => {
     } else {
       let newPostData = foundPost
       newPostData.comments.push(commentData)
+      // console.log(newPostData)
       Post.findByIdAndUpdate(req.body.postId, newPostData, (err, updatedPost) => {
         if (err) {
           res.status(400).json({

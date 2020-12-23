@@ -1,5 +1,22 @@
 const mongoose = require('mongoose')
 
+const User = require('../models/user.js')
+
+const commentSchema = mongoose.Schema({
+  commentCreator: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User'
+  },
+  commentDate: {
+    type: String,
+    required: true
+  },
+  commentText: {
+    type: String,
+    required: true
+  }
+})
+
 const postSchema = mongoose.Schema({
   postCreator: {
     type: String,
@@ -19,11 +36,7 @@ const postSchema = mongoose.Schema({
     required: true
   },
   likedUsers: [String],
-  comments: [{
-      userId: String,
-      commentDate: String,
-      commentText: String
-    }]
+  comments: [commentSchema]
 })
 
 const Post = mongoose.model('Post', postSchema)
